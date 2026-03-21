@@ -69,3 +69,23 @@ class AdvancedScanner:
         self.result_area.insert(tk.END, message + "\n", tag)
         self.result_area.see(tk.END)
 
+        # Utility Functions
+        def ping_host(self):
+            target = self.target_entry.get()
+            self.log(f"[*] Pinging {target}...", "info")
+            # Determine parameter based on OS
+            param = "-n 1" if platform.system().lower() == "windows" else "-c 1"
+            response = os.system(f"ping {param} {target}")
+            if response == 0:
+                self.log(f"[+] {target} is reachable!", "open")
+            else:
+                self.log(f"[-] {target} is down or blocking ICMP.", "closed")
+
+        def dns_lookup(self):
+            target = self.target_entry.get()
+            try:
+                ip = socket.gethostbyname(target)
+                self.log(f"[+] DNS Lookup: {target} -> {ip}", "info")
+            except:
+                self.log(f"[!] Could not resolve {target}", "closed")
+
