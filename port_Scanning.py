@@ -33,3 +33,15 @@ class AdvancedScanner:
         # --- Progress Bar ---
         self.progress = ttk.Progressbar(root, orient="horizontal", length=600, mode="determinate")
         self.progress.pack(pady=5)
+
+        #  Main Buttons
+        btn_frame = tk.Frame(root, bg="#2c3e50")
+        btn_frame.pack(pady=10)
+
+        self.scan_btn = tk.Button(btn_frame, text="Start Deep Scan", command=self.start_scan_thread, bg="#27ae60",
+                                  fg="white", width=15)
+        self.scan_btn.grid(row=0, column=0, padx=5)
+
+        self.save_btn = tk.Button(btn_frame, text="Save Report", command=self.save_results, bg="#2980b9", fg="white",
+                                  width=15)
+        self.save_btn.grid(row=0, column=1, padx=5)
