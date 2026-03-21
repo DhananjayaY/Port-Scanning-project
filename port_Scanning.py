@@ -89,3 +89,55 @@ class AdvancedScanner:
             except:
                 self.log(f"[!] Could not resolve {target}", "closed")
 
+        #  Scanning Functions
+        def start_scan_thread(self):
+            thread = threading.Thread(target=self.run_nmap_scan)
+            thread.daemon = True
+            thread.start()
+
+        def run_nmap_scan(self):
+            target = self.target_entry.get()
+            ports = self.port_entry.get()
+            self.scan_btn.config(state="disabled")
+            self.result_area.delete('1.0', tk.END)
+            self.progress['value'] = 10
+            self.log(f"--- Deep Scan Started: {datetime.now().strftime('%H:%M:%S')} ---", "header")
+
+            try:
+                nm = nmap.PortScanner()
+                nm.scan(target, ports, arguments='-sV -O')
+                self.progress['value'] = 70
+
+                for host in nm.all_hosts():
+                    self.log(f"\nHost: {host} ({nm[host].hostname()})", "header")
+                    if 'osmatch' in nm[host]:
+                        self.log(f"OS: {nm[host]['osmatch'][0]['name']}", "info")
+
+                    for proto in nm[host].all_protocols():
+                        for port in sorted(nm[host][proto].keys()):
+                            state = nm[host][proto][port]['state']
+                            service = nm[host][proto][port]['name']
+                            version = nm[host][proto][port]['version']
+                            tag = "open" if state == "open" else "closed"
+                            self.log(f" Port {port} | {state.upper()} | {service} ({version})", tag)
+
+                self.progress['value'] = 100
+                self.log(f"\n--- Scan Completed ---", "header")
+            except Exception as e:
+                self.log(f"Error: {str(e)}", "closed")
+
+            self.scan_btn.config(state="normal")
+
+        def save_results(self):
+            data = self.result_area.get("1.0", tk.END)
+            f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+            if f:
+                f.write(data)
+                f.close()
+                messagebox.showinfo("Success", "Report saved!")
+
+    if __name__ == "__main__":
+        root = tk.Tk()
+        app = AdvancedScanner(root)
+        root.mainloop()
+
