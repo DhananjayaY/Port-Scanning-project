@@ -45,3 +45,27 @@ class AdvancedScanner:
         self.save_btn = tk.Button(btn_frame, text="Save Report", command=self.save_results, bg="#2980b9", fg="white",
                                   width=15)
         self.save_btn.grid(row=0, column=1, padx=5)
+
+        #  Network Utilities Section (NEW)
+        util_frame = tk.LabelFrame(root, text="Network Utilities", fg="white", bg="#2c3e50", padx=10, pady=10)
+        util_frame.pack(pady=10, padx=20, fill="x")
+
+        tk.Button(util_frame, text="Ping Host", command=self.ping_host, bg="#8e44ad", fg="white", width=12).grid(row=0,
+                                                                                                                 column=0,
+                                                                                                                 padx=5)
+        tk.Button(util_frame, text="DNS Lookup", command=self.dns_lookup, bg="#d35400", fg="white", width=12).grid(
+            row=0, column=1, padx=5)
+
+        # Results Area
+        self.result_area = scrolledtext.ScrolledText(root, width=85, height=25, bg="#1e1e1e", font=("Consolas", 10))
+        self.result_area.pack(pady=10, padx=20)
+
+        self.result_area.tag_config("open", foreground="#00ff00")
+        self.result_area.tag_config("closed", foreground="#ff4444")
+        self.result_area.tag_config("info", foreground="#3498db")
+        self.result_area.tag_config("header", foreground="#f1c40f", font=("Consolas", 11, "bold"))
+
+    def log(self, message, tag="info"):
+        self.result_area.insert(tk.END, message + "\n", tag)
+        self.result_area.see(tk.END)
+
